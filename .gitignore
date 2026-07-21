@@ -1,0 +1,17 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Compiled locally for the current Mac.
+bin/k08hid
+
+# EEPROM backups may contain passwords, tokens, and other private macros.
+data/
+k08-backup-*.json
+*.dump
+
+# Local development files.
+.env
+.env.*
+*.log
