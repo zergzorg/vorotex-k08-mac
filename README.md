@@ -1,6 +1,22 @@
-# VOROTEX K08 macOS Memory Editor
+<h1 align="center">VOROTEX K08 macOS Memory Editor</h1>
 
-[English](#english) · [Русский](#русский) · [中文](#中文)
+<p align="center">
+  Unofficial open-source editor for the onboard memory of the VOROTEX K08 macro keypad.<br>
+  Local, no cloud, no third-party dependencies.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS">
+  <img src="https://img.shields.io/badge/Python-3-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3">
+  <img src="https://img.shields.io/badge/C-IOKit_HID-A8B9CC?style=flat-square&logo=c&logoColor=black" alt="C, IOKit HID">
+  <img src="https://img.shields.io/github/license/zergzorg/vorotex-k08-mac?style=flat-square" alt="MIT License">
+</p>
+
+<p align="center">
+  <a href="#english">English</a> · <a href="#русский">Русский</a> · <a href="#中文">中文</a>
+</p>
+
+---
 
 ## English
 
@@ -38,7 +54,8 @@ The profile marked as active is the profile currently used by the keypad. Editin
 
 ### Privacy and safety
 
-K08 macro memory is **not encrypted**. Anyone with access to the keypad can read stored logins, passwords, commands, and tokens. Local backups contain the same sensitive data in raw form.
+> [!WARNING]
+> K08 macro memory is **not encrypted**. Anyone with access to the keypad can read stored logins, passwords, commands, and tokens. Local backups contain the same sensitive data in raw form.
 
 - Backups are stored only in `data/backups/`.
 - The entire `data/` directory is ignored by Git.
@@ -83,7 +100,8 @@ make run
 
 ### Конфиденциальность и безопасность
 
-Память макросов K08 **не зашифрована**. Человек, получивший доступ к клавиатуре, может прочитать сохранённые логины, пароли, команды и токены. Локальные резервные копии содержат те же данные в открытом виде.
+> [!WARNING]
+> Память макросов K08 **не зашифрована**. Человек, получивший доступ к клавиатуре, может прочитать сохранённые логины, пароли, команды и токены. Локальные резервные копии содержат те же данные в открытом виде.
 
 - Копии сохраняются только в `data/backups/`.
 - Папка `data/` полностью исключена из Git.
@@ -128,7 +146,8 @@ make run
 
 ### 隐私与安全
 
-K08 的宏内存**未加密**。任何能够接触键盘的人都可能读取其中保存的登录名、密码、命令和令牌。本地备份也以原始形式包含相同的敏感信息。
+> [!WARNING]
+> K08 的宏内存**未加密**。任何能够接触键盘的人都可能读取其中保存的登录名、密码、命令和令牌。本地备份也以原始形式包含相同的敏感信息。
 
 - 备份仅保存在 `data/backups/`。
 - 整个 `data/` 目录都被 Git 忽略。
@@ -147,10 +166,12 @@ python3 server.py --port 8788
 
 The project has no third-party runtime dependencies:
 
-- `native/k08hid.c` communicates with the keypad through macOS IOKit.
-- `k08_decode.py` decodes the four binding tables and macro events.
-- `k08_program.py` plans, backs up, writes, restores, and verifies EEPROM changes.
-- `server.py` exposes a localhost-only JSON API and serves the files in `web/`.
+| File | Role |
+| :-- | :-- |
+| `native/k08hid.c` | Communicates with the keypad through macOS IOKit |
+| `k08_decode.py` | Decodes the four binding tables and macro events |
+| `k08_program.py` | Plans, backs up, writes, restores, and verifies EEPROM changes |
+| `server.py` | Exposes a localhost-only JSON API and serves the files in `web/` |
 
 Before publishing a fork, inspect `git diff --cached`. Never force-add `data/`, EEPROM dumps, or logs containing real macros. See [SECURITY.md](SECURITY.md) for reporting guidance.
 
