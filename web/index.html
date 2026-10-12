@@ -3,160 +3,194 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <title>VOROTEX K08 — память клавиатуры</title>
   <link rel="stylesheet" href="/app.css">
 </head>
 <body>
-  <header class="topbar">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-refresh" viewBox="0 0 16 16"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 16 16"><path d="M2 3.5h12v3H2zM3 6.5v6h10v-6M6.5 9h3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 16 16"><path d="M5.5 5.5h7v7h-7zM10.5 5.5v-2h-7v7h2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 16 16"><path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 16 16"><path d="M4 7.5h8v6H4zM5.5 7.5V5.5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 7.25v4M8 4.75v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 16 16"><path d="M8 2 14.5 13.5h-13Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6.5v3.25M8 11.5v.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <header class="toolbar">
     <div class="brand">
-      <span class="brand-mark" aria-hidden="true">K08</span>
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
       <div>
         <h1>VOROTEX K08</h1>
         <p data-i18n="brandSubtitle">Память клавиатуры</p>
       </div>
     </div>
-    <div class="topbar-actions">
+    <div class="toolbar-actions">
+      <button class="device-status" id="refreshDevice" type="button" data-i18n-title="refreshDevice" title="Перечитать K08">
+        <span class="status-dot" id="statusDot" aria-hidden="true"></span>
+        <span id="deviceStatus" data-i18n="deviceChecking">Проверка K08…</span>
+        <svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>
+      </button>
+      <label class="switch" for="privacyToggle">
+        <input id="privacyToggle" type="checkbox" role="switch">
+        <span class="switch-track" aria-hidden="true"></span>
+        <span data-i18n="hideValues">Скрыть значения</span>
+      </label>
       <select class="language-select" id="languageSelect" aria-label="Язык интерфейса" data-i18n-aria-label="languageLabel">
         <option value="en">English</option>
         <option value="ru">Русский</option>
         <option value="zh">中文</option>
       </select>
-      <label class="privacy-control" for="privacyToggle">
-        <input id="privacyToggle" type="checkbox">
-        <span data-i18n="hideValues">Скрыть значения</span>
-      </label>
-      <button class="device-status" id="refreshDevice" type="button">
-        <span class="status-dot" id="statusDot" aria-hidden="true"></span>
-        <span id="deviceStatus" data-i18n="deviceChecking">Проверка K08…</span>
+      <button class="button secondary" id="openBackups" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-archive"/></svg>
+        <span data-i18n="backups">Резервные копии</span>
       </button>
     </div>
   </header>
 
-  <main>
-    <section class="layer-bar" aria-labelledby="layersTitle">
-      <div class="layer-context">
+  <div class="notice" id="deviceError" role="alert" hidden>
+    <svg class="icon" aria-hidden="true"><use href="#i-warn"/></svg>
+    <div>
+      <strong data-i18n="deviceUnavailable">K08 недоступна</strong>
+      <span id="deviceErrorText" data-i18n="reconnect">Переподключи клавиатуру и повтори чтение.</span>
+      <small data-i18n="inputMonitoringHint">Если доступ запрещён: Системные настройки → Конфиденциальность и безопасность → Мониторинг ввода.</small>
+    </div>
+    <button class="button secondary" id="retryDevice" type="button" data-i18n="retry">Повторить</button>
+  </div>
+
+  <main class="app">
+    <nav class="sidebar" aria-labelledby="profilesTitle">
+      <h2 class="section-title" id="profilesTitle" data-i18n="profiles">Профили</h2>
+      <div class="profile-list" id="layerTabs" role="tablist" aria-orientation="vertical" aria-label="Профиль памяти" data-i18n-aria-label="profileTabsLabel">
+        <button type="button" role="tab" data-layer="1" aria-selected="true" aria-controls="stage">
+          <span class="profile-index">1</span>
+          <span class="profile-text"><strong>Office</strong><small class="profile-meta">—</small></span>
+          <span class="badge active-badge" data-i18n="active" hidden>Активен</span>
+          <span class="badge draft-badge" hidden></span>
+        </button>
+        <button type="button" role="tab" data-layer="2" aria-selected="false" aria-controls="stage" tabindex="-1">
+          <span class="profile-index">2</span>
+          <span class="profile-text"><strong>Game I</strong><small class="profile-meta">—</small></span>
+          <span class="badge active-badge" data-i18n="active" hidden>Активен</span>
+          <span class="badge draft-badge" hidden></span>
+        </button>
+        <button type="button" role="tab" data-layer="3" aria-selected="false" aria-controls="stage" tabindex="-1">
+          <span class="profile-index">3</span>
+          <span class="profile-text"><strong>Game II</strong><small class="profile-meta">—</small></span>
+          <span class="badge active-badge" data-i18n="active" hidden>Активен</span>
+          <span class="badge draft-badge" hidden></span>
+        </button>
+        <button type="button" role="tab" data-layer="4" aria-selected="false" aria-controls="stage" tabindex="-1">
+          <span class="profile-index">4</span>
+          <span class="profile-text"><strong>Game III</strong><small class="profile-meta">—</small></span>
+          <span class="badge active-badge" data-i18n="active" hidden>Активен</span>
+          <span class="badge draft-badge" hidden></span>
+        </button>
+      </div>
+      <button class="button secondary sidebar-action" id="copyLayer" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>
+        <span data-i18n="copyIntoProfile">Скопировать в этот профиль…</span>
+      </button>
+      <p class="sidebar-note" data-i18n="activeExplain">Активный профиль переключается кнопкой на самой K08. Редактировать можно любой.</p>
+    </nav>
+
+    <section class="stage" id="stage" role="tabpanel" aria-labelledby="viewLayerTitle">
+      <div class="stage-heading">
         <div>
           <span class="eyebrow" data-i18n="deviceMemory">Память устройства</span>
-          <h2 id="layersTitle" data-i18n="profilesTitle">Четыре профиля, восемь клавиш</h2>
+          <h2 id="viewLayerTitle">Office</h2>
         </div>
-        <p id="layerContext" data-i18n="activeReading">Чтение активного профиля…</p>
+        <span class="pill" id="readState" data-i18n="reading">Чтение…</span>
       </div>
+      <p class="context-strip" id="layerContext">
+        <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+        <span id="layerContextText" data-i18n="activeReading">Чтение активного профиля…</span>
+      </p>
 
-      <div class="layer-controls">
-        <div class="layer-tabs" id="layerTabs" role="tablist" aria-label="Слой памяти" data-i18n-aria-label="profileTabsLabel">
-          <button type="button" role="tab" data-layer="1" aria-selected="true">
-            <span>Office</span><small></small>
-          </button>
-          <button type="button" role="tab" data-layer="2" aria-selected="false">
-            <span>Game I</span><small></small>
-          </button>
-          <button type="button" role="tab" data-layer="3" aria-selected="false">
-            <span>Game II</span><small></small>
-          </button>
-          <button type="button" role="tab" data-layer="4" aria-selected="false">
-            <span>Game III</span><small></small>
-          </button>
-        </div>
-        <div class="layer-actions">
-          <button class="button secondary" id="copyLayer" type="button" data-i18n="copyProfile">Копировать профиль</button>
-          <button class="button secondary" id="openBackups" type="button" data-i18n="backups">Резервные копии</button>
-        </div>
-      </div>
-    </section>
-
-    <div class="notice error" id="deviceError" role="alert" hidden>
-      <div>
-        <strong data-i18n="deviceUnavailable">K08 недоступна</strong>
-        <span id="deviceErrorText" data-i18n="reconnect">Переподключи клавиатуру и повтори чтение.</span>
-      </div>
-      <button class="button secondary" id="retryDevice" type="button" data-i18n="retry">Повторить</button>
-    </div>
-
-    <section class="workspace" aria-label="Редактор профиля K08" data-i18n-aria-label="workspaceLabel">
-      <div class="keypad-pane">
-        <div class="pane-heading">
-          <div>
-            <span class="eyebrow" data-i18n="openedForViewing">Открыт для просмотра</span>
-            <h2 id="viewLayerTitle">Слой 1</h2>
-          </div>
-          <span class="read-state" id="readState" data-i18n="reading">Чтение…</span>
-        </div>
-
-        <div class="keypad-shell">
+      <div class="device">
+        <div class="device-body">
           <div class="keypad-grid" id="keypad" aria-label="Клавиши выбранного профиля" data-i18n-aria-label="keypadLabel"></div>
-          <div class="keypad-footer">
-            <span>VOROTEX</span>
-            <span id="layerFingerprint">—</span>
-          </div>
+          <div class="device-knobs" aria-hidden="true"><span></span><span></span></div>
+        </div>
+        <div class="device-footer">
+          <span></span>
+          <span class="device-logo">VOROTEX</span>
+          <span id="layerFingerprint">—</span>
         </div>
       </div>
 
-      <aside class="editor-pane" aria-labelledby="editorTitle">
-        <div class="editor-heading">
-          <div>
-            <span class="eyebrow" id="editorLayer">Слой 1</span>
-            <h2 id="editorTitle">K1</h2>
-          </div>
-          <span class="change-badge" id="changeBadge" hidden data-i18n="notWritten">Не записано</span>
-        </div>
-
-        <div class="binding-meta" id="bindingMeta" data-i18n="selectKey">Выбери клавишу</div>
-
-        <div class="field">
-          <div class="field-label-row">
-            <label for="macroText" data-i18n="phraseOrCommand">Фраза или команда</label>
-            <span id="eventMeter">0 / 127 событий</span>
-          </div>
-          <textarea id="macroText" rows="8" spellcheck="false" autocomplete="off" placeholder="login{TAB}password{ENTER}"></textarea>
-          <p class="field-error" id="macroError" role="alert" hidden></p>
-        </div>
-
-        <div class="token-block">
-          <span class="field-label" data-i18n="insertAction">Вставить действие</span>
-          <div class="token-row" id="tokenRow">
-            <button type="button" data-token="{TAB}">Tab</button>
-            <button type="button" data-token="{ENTER}">Enter</button>
-            <button type="button" data-token="{CMD+TAB}">⌘ Tab</button>
-            <button type="button" data-token="{ALT+TAB}">Alt Tab</button>
-            <button type="button" data-token="{CTRL+A}">Ctrl A</button>
-            <button type="button" data-token="{CTRL+C}">Ctrl C</button>
-            <button type="button" data-token="{CTRL+V}">Ctrl V</button>
-            <button type="button" data-token="{ESC}">Esc</button>
-            <button type="button" data-token="{BACKSPACE}">⌫</button>
-            <button type="button" data-token="{DELETE}">Delete</button>
-          </div>
-        </div>
-
-        <div class="caution-list">
-          <p><strong data-i18n="layoutLabel">Раскладка:</strong> <span data-i18n="layoutWarning">на другом ПК перед вводом должна быть включена английская раскладка.</span></p>
-          <p><strong data-i18n="passwordsLabel">Пароли:</strong> <span data-i18n="passwordsWarning">макросы и резервные копии K08 не зашифрованы.</span></p>
-        </div>
-
-        <details class="advanced">
-          <summary data-i18n="writeSettings">Параметры записи</summary>
-          <dl>
-            <div><dt data-i18n="address">Адрес</dt><dd id="macroAddress">—</dd></div>
-            <div><dt data-i18n="sharedReferences">Общих ссылок</dt><dd id="sharedCount">—</dd></div>
-          </dl>
-        </details>
-
-        <div class="editor-actions">
-          <button class="button danger" id="clearKey" type="button">Очистить K1</button>
-          <button class="button primary" id="writeKey" type="button">Записать в Office</button>
-        </div>
-      </aside>
+      <p class="shortcut-hint">
+        <span><kbd>1</kbd>–<kbd>8</kbd> <span data-i18n="hintSelect">выбор клавиши</span></span>
+        <span><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> <span data-i18n="hintMove">перемещение</span></span>
+        <span><kbd>⌘</kbd><kbd>S</kbd> <span data-i18n="hintWrite">записать</span></span>
+      </p>
     </section>
+
+    <aside class="inspector" aria-labelledby="editorTitle">
+      <div class="inspector-heading">
+        <div>
+          <span class="eyebrow" id="editorLayer">Office</span>
+          <h2 id="editorTitle">K1</h2>
+        </div>
+        <span class="pill warn" id="changeBadge" hidden data-i18n="notWritten">Не записано</span>
+      </div>
+
+      <p class="binding-meta" id="bindingMeta" data-i18n="selectKey">Выбери клавишу</p>
+
+      <div class="field">
+        <div class="field-label-row">
+          <label for="macroText" data-i18n="phraseOrCommand">Фраза или команда</label>
+          <button class="ghost-button" id="revealText" type="button" aria-pressed="false" hidden>
+            <svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg>
+            <span data-i18n="show">Показать</span>
+          </button>
+        </div>
+        <textarea class="macro-input" id="macroText" rows="7" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="login{TAB}password{ENTER}" aria-describedby="eventMeter macroError"></textarea>
+        <div class="meter" aria-hidden="true"><span id="meterFill"></span></div>
+        <div class="meter-row">
+          <span id="eventMeter">0 / 127</span>
+          <button class="ghost-button" id="revertKey" type="button" hidden data-i18n="revert">Отменить изменения</button>
+        </div>
+        <p class="field-error" id="macroError" role="alert" hidden></p>
+      </div>
+
+      <div class="token-block">
+        <span class="field-label" data-i18n="insertKeys">Клавиши</span>
+        <div class="token-row" id="tokenKeys"></div>
+        <span class="field-label" data-i18n="insertShortcuts">Сочетания</span>
+        <div class="token-row" id="tokenShortcuts"></div>
+      </div>
+
+      <ul class="caution-list">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span data-i18n="layoutWarning">На другом ПК перед вводом должна быть включена английская раскладка.</span></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span data-i18n="passwordsWarning">Макросы и резервные копии K08 не зашифрованы.</span></li>
+      </ul>
+
+      <details class="advanced">
+        <summary data-i18n="writeSettings">Технические детали</summary>
+        <dl>
+          <div><dt data-i18n="address">Адрес</dt><dd id="macroAddress">—</dd></div>
+          <div><dt data-i18n="sharedReferences">Общих ссылок</dt><dd id="sharedCount">—</dd></div>
+        </dl>
+      </details>
+
+      <div class="inspector-actions">
+        <button class="button danger" id="clearKey" type="button">Очистить K1</button>
+        <button class="button primary" id="writeKey" type="button">Записать в Office</button>
+      </div>
+    </aside>
   </main>
 
-  <dialog id="copyDialog">
+  <dialog id="copyDialog" aria-labelledby="copyDialogTitle">
     <form method="dialog" class="dialog-body">
       <div class="dialog-heading">
         <div>
           <span class="eyebrow" data-i18n="fullAssignmentCopy">Полная копия назначений</span>
-          <h2 data-i18n="copyProfile">Копировать профиль</h2>
+          <h2 id="copyDialogTitle" data-i18n="copyProfile">Копировать профиль</h2>
         </div>
-        <button class="dialog-close" value="cancel" aria-label="Закрыть" data-i18n-aria-label="close" type="submit">×</button>
+        <button class="icon-button" value="cancel" aria-label="Закрыть" data-i18n-aria-label="close" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
       </div>
       <div class="copy-route">
         <div>
@@ -168,40 +202,40 @@
             <option value="4">Game III</option>
           </select>
         </div>
-        <span aria-hidden="true">→</span>
-        <div><small data-i18n="toCurrent">В текущий</small><strong id="copyTarget">Слой 2</strong></div>
+        <span class="copy-arrow" aria-hidden="true">→</span>
+        <div>
+          <small data-i18n="toCurrent">В текущий</small>
+          <strong id="copyTarget">Game I</strong>
+        </div>
       </div>
-      <p class="dialog-note" data-i18n="copyWarning">Все восемь назначений целевого профиля будут заменены. Перед операцией автоматически создается резервная копия.</p>
+      <p class="dialog-note warn-note" data-i18n="copyWarning">Все восемь назначений целевого профиля будут заменены. Перед операцией автоматически создается резервная копия.</p>
       <div class="dialog-actions">
         <button class="button secondary" value="cancel" type="submit" data-i18n="cancel">Отмена</button>
-        <button class="button primary" id="confirmCopy" value="default" type="button" data-i18n="copy">Копировать</button>
+        <button class="button primary" id="confirmCopy" type="button" data-i18n="copy">Копировать</button>
       </div>
     </form>
   </dialog>
 
-  <dialog id="backupDialog">
+  <dialog id="backupDialog" aria-labelledby="backupDialogTitle">
     <div class="dialog-body">
       <div class="dialog-heading">
         <div>
           <span class="eyebrow" data-i18n="memoryProtection">Защита памяти</span>
-          <h2 data-i18n="backups">Резервные копии</h2>
+          <h2 id="backupDialogTitle" data-i18n="backups">Резервные копии</h2>
         </div>
-        <button class="dialog-close" id="closeBackups" aria-label="Закрыть" data-i18n-aria-label="close" type="button">×</button>
+        <button class="icon-button" id="closeBackups" aria-label="Закрыть" data-i18n-aria-label="close" type="button"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
       </div>
-      <button class="button secondary full" id="createBackup" type="button" data-i18n="createBackupNow">Создать копию сейчас</button>
-      <div class="field backup-field">
-        <label for="backupSelect" data-i18n="restoreState">Восстановить состояние</label>
-        <select id="backupSelect"></select>
-      </div>
-      <p class="dialog-note" id="backupMeta" data-i18n="selectSavedState">Выбери сохраненное состояние.</p>
-      <div class="dialog-actions">
+      <p class="dialog-note" data-i18n="backupsExplain">Копия создаётся автоматически перед каждой записью. Файлы хранятся локально в data/backups.</p>
+      <div class="backup-list" id="backupList" role="radiogroup" aria-label="Восстановить состояние" data-i18n-aria-label="restoreState"></div>
+      <div class="dialog-actions split">
+        <button class="button secondary" id="createBackup" type="button" data-i18n="createBackupNow">Создать копию сейчас</button>
         <button class="button danger" id="restoreBackup" type="button" data-i18n="restoreMemory">Восстановить память</button>
       </div>
     </div>
   </dialog>
 
-  <dialog id="confirmDialog">
-    <div class="dialog-body compact">
+  <dialog id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="dialog-body">
       <div class="dialog-heading">
         <div>
           <span class="eyebrow" data-i18n="deviceWrite">Запись в устройство</span>
@@ -209,7 +243,7 @@
         </div>
       </div>
       <p class="dialog-note" id="confirmText"></p>
-      <div class="confirm-summary" id="confirmSummary"></div>
+      <ul class="confirm-summary" id="confirmSummary"></ul>
       <div class="dialog-actions">
         <button class="button secondary" id="cancelConfirm" type="button" data-i18n="cancel">Отмена</button>
         <button class="button primary" id="acceptConfirm" type="button" data-i18n="confirm">Подтвердить</button>
@@ -218,10 +252,13 @@
   </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite" hidden>
-    <strong id="toastTitle"></strong>
-    <span id="toastText"></span>
+    <div>
+      <strong id="toastTitle"></strong>
+      <span id="toastText"></span>
+    </div>
+    <button class="icon-button" id="toastClose" type="button" aria-label="Закрыть" data-i18n-aria-label="close"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
   </div>
 
-  <script src="/app.js" defer></script>
+  <script type="module" src="/app.js"></script>
 </body>
 </html>

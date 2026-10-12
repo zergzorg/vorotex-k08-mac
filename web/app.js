@@ -1,3 +1,5 @@
+import { I18N, LOCALE_NAMES } from "/i18n.js";
+
 const $ = (id) => document.getElementById(id);
 
 const TOKEN_EVENTS = {
@@ -15,355 +17,44 @@ const TOKEN_EVENTS = {
   "CTRL+X": 4,
 };
 
+const TOKEN_LABELS = {
+  "ENTER": "↵ Enter",
+  "TAB": "⇥ Tab",
+  "ESC": "Esc",
+  "BACKSPACE": "⌫",
+  "DELETE": "Delete",
+  "CMD+TAB": "⌘ Tab",
+  "WIN+TAB": "Win Tab",
+  "ALT+TAB": "Alt Tab",
+  "CTRL+A": "Ctrl A",
+  "CTRL+C": "Ctrl C",
+  "CTRL+V": "Ctrl V",
+  "CTRL+X": "Ctrl X",
+};
+
+const KEY_TOKENS = ["ENTER", "TAB", "ESC", "BACKSPACE", "DELETE"];
+const SHORTCUT_TOKENS = ["CMD+TAB", "ALT+TAB", "CTRL+A", "CTRL+C", "CTRL+V", "CTRL+X"];
+
 const UNSHIFTED = new Set("abcdefghijklmnopqrstuvwxyz0123456789\n\t -=[]\\;'`,./");
 const SHIFTED = new Set("ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+{}|:\"~<>?");
-const mutationButtons = ["writeKey", "clearKey", "confirmCopy", "createBackup", "restoreBackup"];
-const PROFILE_NAMES = {
-  1: "Office",
-  2: "Game I",
-  3: "Game II",
-  4: "Game III",
-};
-
-const LOCALE_NAMES = {
-  en: "en-US",
-  ru: "ru-RU",
-  zh: "zh-CN",
-};
-
-const I18N = {
-  en: {
-    pageTitle: "VOROTEX K08 — keyboard memory",
-    languageLabel: "Interface language",
-    brandSubtitle: "Keyboard memory",
-    hideValues: "Hide values",
-    deviceChecking: "Checking K08…",
-    deviceMemory: "Device memory",
-    profilesTitle: "Four profiles, eight keys",
-    activeReading: "Reading active profile…",
-    profileTabsLabel: "Memory profile",
-    copyProfile: "Copy profile",
-    backups: "Backups",
-    deviceUnavailable: "K08 unavailable",
-    reconnect: "Reconnect the keypad and try reading again.",
-    retry: "Retry",
-    workspaceLabel: "K08 profile editor",
-    openedForViewing: "Open for viewing",
-    reading: "Reading…",
-    keypadLabel: "Keys in the selected profile",
-    notWritten: "Not written",
-    selectKey: "Select a key",
-    phraseOrCommand: "Text or command",
-    insertAction: "Insert action",
-    layoutLabel: "Layout:",
-    layoutWarning: "the other computer must use an English keyboard layout before playback.",
-    passwordsLabel: "Passwords:",
-    passwordsWarning: "K08 macros and backups are not encrypted.",
-    writeSettings: "Write settings",
-    address: "Address",
-    sharedReferences: "Shared references",
-    fullAssignmentCopy: "Complete assignment copy",
-    close: "Close",
-    fromProfile: "From profile",
-    toCurrent: "To current",
-    copyWarning: "All eight assignments in the target profile will be replaced. A backup is created automatically first.",
-    cancel: "Cancel",
-    copy: "Copy",
-    memoryProtection: "Memory protection",
-    createBackupNow: "Create backup now",
-    restoreState: "Restore state",
-    selectSavedState: "Select a saved state.",
-    restoreMemory: "Restore memory",
-    deviceWrite: "Write to device",
-    confirmAction: "Confirm action",
-    confirm: "Confirm",
-    profileFallback: "Profile {profile}",
-    empty: "Empty",
-    invalidCharacter: "Character “{char}” cannot be written as a HID key. Use Latin characters and supported actions.",
-    macroTooLong: "The macro contains {count} events; the maximum is 127.",
-    requestFailed: "K08 could not complete the request",
-    deviceNotFound: "K08 not found",
-    activeProfile: "Active: {profile}",
-    deviceConnected: "K08 connected",
-    connectToRead: "Connect the K08 to read its onboard memory.",
-    activeUnknown: "The active profile could not be determined.",
-    activeContext: "{profile} is open and currently active on the keypad.",
-    inactiveContext: "{view} is open; {active} is active on the keypad. Writing here will not change the active profile.",
-    activeOnK08: "Active on K08",
-    unsavedCount: "{count} unsaved",
-    hiddenValue: "K{key}: value hidden",
-    visibleValue: "K{key}: {value}",
-    needsEdit: "Needs editing",
-    eventsCount: "{count} HID events",
-    assignedCount: "{count} of 8 assigned",
-    eventMeter: "{count} / 127 events",
-    writeTo: "Write to {profile}",
-    clearKey: "Clear K{key}",
-    newBlock: "New block",
-    bindingUnread: "Data for this key has not been read.",
-    bindingEmpty: "This key is not assigned in the selected profile.",
-    sharedMacro: "The current macro is used in {count} profiles. The new value will be stored separately and will not change the others.",
-    bindingDetails: "{count} HID events · {address}",
-    addressUnknown: "address unknown",
-    readDone: "Read from K08",
-    noData: "No data",
-    sizeKb: "{size} KB",
-    noBackups: "No backups yet",
-    createFirstBackup: "Create the first backup of the current K08 memory.",
-    backupReadFailed: "Could not read backups",
-    writeTitle: "Write K{key}",
-    writeActiveText: "The assignment will be saved to the active {profile} profile.",
-    writeInactiveText: "The assignment will be saved to {view}, but {active} is currently active on the keypad.",
-    backupAutomatic: "A backup is created automatically",
-    writeConfirm: "Write to K08",
-    activeChange: "This change belongs to the active profile.",
-    activeRemains: "{profile} remains active on the K08.",
-    writeDone: "Written to {profile}",
-    writeDoneDetails: "K{key}. {activeNote} Backup: {backup}",
-    writeFailed: "Write not completed",
-    clearTitle: "Clear K{key}",
-    clearText: "The key will be cleared only in {profile}.",
-    clearConfirm: "Clear key",
-    keyCleared: "Key cleared",
-    keyClearedDetails: "{profile}, K{key}. Backup: {backup}",
-    clearFailed: "Clear failed",
-    profileCopied: "Profile copied",
-    profileCopiedDetails: "{source} → {target}. Backup: {backup}",
-    copyFailed: "Copy failed",
-    backupCreated: "Backup created",
-    backupFailed: "Backup not created",
-    restoreTitle: "Restore all memory",
-    restoreText: "Assignments in all four profiles will be replaced with the selected backup.",
-    draftsDeleted: "All local drafts will be deleted",
-    restoreConfirm: "Restore memory",
-    restoreDone: "Memory restored",
-    restoreFailed: "Restore failed",
-    permissionDenied: "macOS denied access to the K08. Allow your terminal under Input Monitoring and restart the app.",
-  },
-  ru: {
-    pageTitle: "VOROTEX K08 — память клавиатуры",
-    languageLabel: "Язык интерфейса",
-    brandSubtitle: "Память клавиатуры",
-    hideValues: "Скрыть значения",
-    deviceChecking: "Проверка K08…",
-    deviceMemory: "Память устройства",
-    profilesTitle: "Четыре профиля, восемь клавиш",
-    activeReading: "Чтение активного профиля…",
-    profileTabsLabel: "Профиль памяти",
-    copyProfile: "Копировать профиль",
-    backups: "Резервные копии",
-    deviceUnavailable: "K08 недоступна",
-    reconnect: "Переподключи клавиатуру и повтори чтение.",
-    retry: "Повторить",
-    workspaceLabel: "Редактор профиля K08",
-    openedForViewing: "Открыт для просмотра",
-    reading: "Чтение…",
-    keypadLabel: "Клавиши выбранного профиля",
-    notWritten: "Не записано",
-    selectKey: "Выбери клавишу",
-    phraseOrCommand: "Фраза или команда",
-    insertAction: "Вставить действие",
-    layoutLabel: "Раскладка:",
-    layoutWarning: "на другом ПК перед вводом должна быть включена английская раскладка.",
-    passwordsLabel: "Пароли:",
-    passwordsWarning: "макросы и резервные копии K08 не зашифрованы.",
-    writeSettings: "Параметры записи",
-    address: "Адрес",
-    sharedReferences: "Общих ссылок",
-    fullAssignmentCopy: "Полная копия назначений",
-    close: "Закрыть",
-    fromProfile: "Из профиля",
-    toCurrent: "В текущий",
-    copyWarning: "Все восемь назначений целевого профиля будут заменены. Перед операцией автоматически создается резервная копия.",
-    cancel: "Отмена",
-    copy: "Копировать",
-    memoryProtection: "Защита памяти",
-    createBackupNow: "Создать копию сейчас",
-    restoreState: "Восстановить состояние",
-    selectSavedState: "Выбери сохраненное состояние.",
-    restoreMemory: "Восстановить память",
-    deviceWrite: "Запись в устройство",
-    confirmAction: "Подтвердить действие",
-    confirm: "Подтвердить",
-    profileFallback: "Профиль {profile}",
-    empty: "Пусто",
-    invalidCharacter: "Символ «{char}» нельзя записать как HID-клавишу. Используй латиницу и поддерживаемые действия.",
-    macroTooLong: "Макрос содержит {count} событий, максимум — 127.",
-    requestFailed: "K08 не выполнила запрос",
-    deviceNotFound: "K08 не найдена",
-    activeProfile: "Активен {profile}",
-    deviceConnected: "K08 подключена",
-    connectToRead: "Подключи K08, чтобы прочитать встроенную память.",
-    activeUnknown: "Активный профиль не удалось определить.",
-    activeContext: "{profile} открыт и сейчас активен на клавиатуре.",
-    inactiveContext: "Открыт {view}; на клавиатуре активен {active}. Запись сюда не изменит активный профиль.",
-    activeOnK08: "Активен на K08",
-    unsavedCount: "Не записано: {count}",
-    hiddenValue: "K{key}: значение скрыто",
-    visibleValue: "K{key}: {value}",
-    needsEdit: "Нужна правка",
-    eventsCount: "HID-событий: {count}",
-    assignedCount: "Назначено: {count} из 8",
-    eventMeter: "{count} / 127 событий",
-    writeTo: "Записать в {profile}",
-    clearKey: "Очистить K{key}",
-    newBlock: "Новый блок",
-    bindingUnread: "Данные этой клавиши не прочитаны.",
-    bindingEmpty: "Клавиша не назначена в этом профиле.",
-    sharedMacro: "Текущий макрос используется в {count} профилях. Новая запись будет отдельной и не изменит остальные.",
-    bindingDetails: "HID-событий: {count} · {address}",
-    addressUnknown: "адрес не определен",
-    readDone: "Прочитано из K08",
-    noData: "Нет данных",
-    sizeKb: "{size} КБ",
-    noBackups: "Копий пока нет",
-    createFirstBackup: "Создай первую резервную копию текущей памяти K08.",
-    backupReadFailed: "Не удалось прочитать копии",
-    writeTitle: "Записать K{key}",
-    writeActiveText: "Назначение будет сохранено в активном профиле {profile}.",
-    writeInactiveText: "Назначение будет сохранено в {view}, но на клавиатуре сейчас активен {active}.",
-    backupAutomatic: "Резервная копия создается автоматически",
-    writeConfirm: "Записать в K08",
-    activeChange: "Изменение относится к активному профилю.",
-    activeRemains: "На K08 остается активен {profile}.",
-    writeDone: "Записано в {profile}",
-    writeDoneDetails: "K{key}. {activeNote} Бэкап: {backup}",
-    writeFailed: "Запись не завершена",
-    clearTitle: "Очистить K{key}",
-    clearText: "Клавиша станет пустой только в {profile}.",
-    clearConfirm: "Очистить клавишу",
-    keyCleared: "Клавиша очищена",
-    keyClearedDetails: "{profile}, K{key}. Бэкап: {backup}",
-    clearFailed: "Очистка не выполнена",
-    profileCopied: "Профиль скопирован",
-    profileCopiedDetails: "{source} → {target}. Бэкап: {backup}",
-    copyFailed: "Копирование не выполнено",
-    backupCreated: "Резервная копия создана",
-    backupFailed: "Копия не создана",
-    restoreTitle: "Восстановить всю память",
-    restoreText: "Текущие назначения четырех профилей будут заменены состоянием из резервной копии.",
-    draftsDeleted: "Все локальные черновики будут удалены",
-    restoreConfirm: "Восстановить память",
-    restoreDone: "Память восстановлена",
-    restoreFailed: "Восстановление не выполнено",
-    permissionDenied: "macOS не разрешила доступ к K08. Разреши терминалу мониторинг ввода и перезапусти приложение.",
-  },
-  zh: {
-    pageTitle: "VOROTEX K08 — 键盘内存",
-    languageLabel: "界面语言",
-    brandSubtitle: "键盘内存",
-    hideValues: "隐藏内容",
-    deviceChecking: "正在检查 K08…",
-    deviceMemory: "设备内存",
-    profilesTitle: "四个配置文件，八个按键",
-    activeReading: "正在读取活动配置…",
-    profileTabsLabel: "内存配置文件",
-    copyProfile: "复制配置",
-    backups: "备份",
-    deviceUnavailable: "K08 不可用",
-    reconnect: "请重新连接键盘并再次读取。",
-    retry: "重试",
-    workspaceLabel: "K08 配置编辑器",
-    openedForViewing: "当前查看",
-    reading: "正在读取…",
-    keypadLabel: "所选配置中的按键",
-    notWritten: "尚未写入",
-    selectKey: "请选择按键",
-    phraseOrCommand: "文本或命令",
-    insertAction: "插入操作",
-    layoutLabel: "键盘布局：",
-    layoutWarning: "在其他电脑上执行宏之前，请切换到英文键盘布局。",
-    passwordsLabel: "密码：",
-    passwordsWarning: "K08 宏和备份均未加密。",
-    writeSettings: "写入设置",
-    address: "地址",
-    sharedReferences: "共享引用",
-    fullAssignmentCopy: "复制全部按键设置",
-    close: "关闭",
-    fromProfile: "来源配置",
-    toCurrent: "复制到当前配置",
-    copyWarning: "目标配置中的八个按键设置将全部被替换。操作前会自动创建备份。",
-    cancel: "取消",
-    copy: "复制",
-    memoryProtection: "内存保护",
-    createBackupNow: "立即创建备份",
-    restoreState: "恢复状态",
-    selectSavedState: "请选择已保存的状态。",
-    restoreMemory: "恢复内存",
-    deviceWrite: "写入设备",
-    confirmAction: "确认操作",
-    confirm: "确认",
-    profileFallback: "配置 {profile}",
-    empty: "空",
-    invalidCharacter: "字符“{char}”无法作为 HID 按键写入。请使用拉丁字符或受支持的操作。",
-    macroTooLong: "宏包含 {count} 个事件，最多允许 127 个。",
-    requestFailed: "K08 无法完成请求",
-    deviceNotFound: "未找到 K08",
-    activeProfile: "活动配置：{profile}",
-    deviceConnected: "K08 已连接",
-    connectToRead: "请连接 K08 以读取板载内存。",
-    activeUnknown: "无法确定活动配置。",
-    activeContext: "已打开 {profile}，该配置目前在键盘上处于活动状态。",
-    inactiveContext: "已打开 {view}；键盘当前使用 {active}。写入此处不会改变活动配置。",
-    activeOnK08: "K08 当前活动",
-    unsavedCount: "{count} 项未写入",
-    hiddenValue: "K{key}：内容已隐藏",
-    visibleValue: "K{key}：{value}",
-    needsEdit: "需要修改",
-    eventsCount: "{count} 个 HID 事件",
-    assignedCount: "已设置 {count}/8",
-    eventMeter: "{count} / 127 个事件",
-    writeTo: "写入 {profile}",
-    clearKey: "清除 K{key}",
-    newBlock: "新数据块",
-    bindingUnread: "尚未读取此按键的数据。",
-    bindingEmpty: "此按键在当前配置中没有设置。",
-    sharedMacro: "当前宏被 {count} 个配置共同使用。新内容将单独保存，不会修改其他配置。",
-    bindingDetails: "{count} 个 HID 事件 · {address}",
-    addressUnknown: "地址未知",
-    readDone: "已从 K08 读取",
-    noData: "无数据",
-    sizeKb: "{size} KB",
-    noBackups: "暂无备份",
-    createFirstBackup: "为当前 K08 内存创建第一个备份。",
-    backupReadFailed: "无法读取备份",
-    writeTitle: "写入 K{key}",
-    writeActiveText: "按键设置将保存到当前活动配置 {profile}。",
-    writeInactiveText: "按键设置将保存到 {view}，但键盘当前使用的是 {active}。",
-    backupAutomatic: "将自动创建备份",
-    writeConfirm: "写入 K08",
-    activeChange: "此更改属于当前活动配置。",
-    activeRemains: "K08 仍使用 {profile}。",
-    writeDone: "已写入 {profile}",
-    writeDoneDetails: "K{key}。{activeNote} 备份：{backup}",
-    writeFailed: "写入未完成",
-    clearTitle: "清除 K{key}",
-    clearText: "只会清除 {profile} 中的此按键。",
-    clearConfirm: "清除按键",
-    keyCleared: "按键已清除",
-    keyClearedDetails: "{profile}，K{key}。备份：{backup}",
-    clearFailed: "清除失败",
-    profileCopied: "配置已复制",
-    profileCopiedDetails: "{source} → {target}。备份：{backup}",
-    copyFailed: "复制失败",
-    backupCreated: "备份已创建",
-    backupFailed: "未能创建备份",
-    restoreTitle: "恢复全部内存",
-    restoreText: "四个配置中的当前按键设置将被所选备份替换。",
-    draftsDeleted: "所有本地草稿都将被删除",
-    restoreConfirm: "恢复内存",
-    restoreDone: "内存已恢复",
-    restoreFailed: "恢复失败",
-    permissionDenied: "macOS 拒绝访问 K08。请允许终端进行输入监控，然后重新启动程序。",
-  },
-};
+const MAX_EVENTS = 127;
+const KEYS = [1, 2, 3, 4, 5, 6, 7, 8];
+const LAYERS = [1, 2, 3, 4];
+const PROFILE_NAMES = { 1: "Office", 2: "Game I", 3: "Game II", 4: "Game III" };
+const mutationButtons = ["writeKey", "clearKey", "revertKey", "confirmCopy", "createBackup", "restoreBackup"];
 
 function detectLanguage() {
   const saved = localStorage.getItem("k08-language");
-  if (saved in I18N) return saved;
+  if (saved in I18N) {
+    return saved;
+  }
   const browserLanguage = navigator.language.toLowerCase();
-  if (browserLanguage.startsWith("zh")) return "zh";
-  if (browserLanguage.startsWith("ru")) return "ru";
+  if (browserLanguage.startsWith("zh")) {
+    return "zh";
+  }
+  if (browserLanguage.startsWith("ru")) {
+    return "ru";
+  }
   return "en";
 }
 
@@ -377,9 +68,15 @@ const state = {
   layers: [],
   drafts: new Map(),
   backups: [],
+  selectedBackup: "",
   pending: 0,
+  busy: false,
+  checking: false,
+  revealed: false,
+  deviceError: "",
   toastTimer: null,
   readStatus: "reading",
+  keycaps: [],
 };
 
 function t(key, values = {}) {
@@ -394,7 +91,10 @@ function applyStaticTranslations() {
     element.textContent = t(element.dataset.i18n);
   });
   document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
-    element.setAttribute("aria-label", t(element.getAttribute("data-i18n-aria-label")));
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach((element) => {
+    element.title = t(element.dataset.i18nTitle);
   });
   $("languageSelect").value = state.language;
 }
@@ -403,47 +103,49 @@ function draftId(layer = state.viewLayer, key = state.selectedKey) {
   return `${layer}:${key}`;
 }
 
-function currentLayer() {
-  return state.layers.find((layer) => layer.layer === state.viewLayer) || null;
-}
-
 function profileName(layer) {
   return PROFILE_NAMES[layer] || t("profileFallback", { profile: layer });
 }
 
+function findLayer(layer) {
+  return state.layers.find((item) => item.layer === layer) || null;
+}
+
+function findItem(layer, key) {
+  return findLayer(layer)?.keys.find((item) => item.key === key) || null;
+}
+
 function currentItem() {
-  return currentLayer()?.keys.find((item) => item.key === state.selectedKey) || null;
+  return findItem(state.viewLayer, state.selectedKey);
 }
 
-function storedText() {
-  return currentItem()?.text || "";
+function storedText(layer = state.viewLayer, key = state.selectedKey) {
+  return findItem(layer, key)?.text || "";
 }
 
-function editorText() {
-  const id = draftId();
-  return state.drafts.has(id) ? state.drafts.get(id) : storedText();
+function keyText(layer, key) {
+  const id = draftId(layer, key);
+  return state.drafts.has(id) ? state.drafts.get(id) : storedText(layer, key);
 }
 
 function layerDraftCount(layer) {
-  let count = 0;
-  for (const key of state.drafts.keys()) {
-    if (key.startsWith(`${layer}:`)) count += 1;
-  }
-  return count;
+  return Array.from(state.drafts.keys()).filter((id) => id.startsWith(`${layer}:`)).length;
+}
+
+function assignedCount(layer) {
+  return KEYS.filter((key) => keyText(layer, key)).length;
 }
 
 function isPrivate() {
   return $("privacyToggle").checked;
 }
 
-function maskPreview(text) {
-  if (!text) return t("empty");
-  if (!isPrivate()) return text;
-  return "••••••••••••";
+function anyDialogOpen() {
+  return Boolean(document.querySelector("dialog[open]"));
 }
 
-function calculateEvents(text) {
-  let events = 0;
+function tokenize(text) {
+  const parts = [];
   let position = 0;
   while (position < text.length) {
     if (text[position] === "{") {
@@ -451,28 +153,61 @@ function calculateEvents(text) {
       if (end !== -1) {
         const token = text.slice(position + 1, end).trim().toUpperCase();
         if (TOKEN_EVENTS[token] !== undefined) {
-          events += TOKEN_EVENTS[token];
+          parts.push({ token, events: TOKEN_EVENTS[token] });
           position = end + 1;
           continue;
         }
       }
     }
-
     const char = text[position];
-    if (UNSHIFTED.has(char)) {
-      events += 2;
-    } else if (SHIFTED.has(char)) {
-      events += 4;
-    } else {
-      return { events, error: t("invalidCharacter", { char }) };
-    }
+    const events = UNSHIFTED.has(char) ? 2 : SHIFTED.has(char) ? 4 : 0;
+    parts.push({ char, events });
     position += 1;
   }
+  return parts;
+}
 
-  if (events > 127) {
+function calculateEvents(text) {
+  let events = 0;
+  for (const part of tokenize(text)) {
+    if (!part.events) {
+      return { events, error: t("invalidCharacter", { char: part.char }) };
+    }
+    events += part.events;
+  }
+  if (events > MAX_EVENTS) {
     return { events, error: t("macroTooLong", { count: events }) };
   }
   return { events, error: "" };
+}
+
+function previewNodes(text) {
+  if (!text) {
+    return [t("empty")];
+  }
+  if (isPrivate()) {
+    return ["••••••••••"];
+  }
+  const nodes = [];
+  let buffer = "";
+  for (const part of tokenize(text)) {
+    if (!part.token) {
+      buffer += part.char === "\n" ? "↵" : part.char === "\t" ? "⇥" : part.char;
+      continue;
+    }
+    if (buffer) {
+      nodes.push(buffer);
+      buffer = "";
+    }
+    const chip = document.createElement("span");
+    chip.className = "token-chip";
+    chip.textContent = TOKEN_LABELS[part.token] || part.token;
+    nodes.push(chip);
+  }
+  if (buffer) {
+    nodes.push(buffer);
+  }
+  return nodes;
 }
 
 function setPending(delta) {
@@ -481,14 +216,20 @@ function setPending(delta) {
 }
 
 function setMutationBusy(value) {
+  state.busy = value;
   mutationButtons.forEach((id) => {
-    const button = $(id);
-    if (button) button.disabled = value;
+    $(id).disabled = value;
   });
+  if (!value) {
+    renderEditorStatus();
+    renderBackups();
+  }
 }
 
-async function api(path, payload = null) {
-  setPending(1);
+async function api(path, payload = null, { quiet = false } = {}) {
+  if (!quiet) {
+    setPending(1);
+  }
   try {
     const response = await fetch(path, {
       method: payload === null ? "GET" : "POST",
@@ -496,30 +237,34 @@ async function api(path, payload = null) {
       body: payload === null ? undefined : JSON.stringify(payload),
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.error || t("requestFailed"));
+    if (!response.ok) {
+      throw new Error(data.error || t("requestFailed"));
+    }
     return data;
   } finally {
-    setPending(-1);
+    if (!quiet) {
+      setPending(-1);
+    }
   }
 }
 
-function showToast(title, text = "") {
+function showToast(title, text = "", kind = "success") {
   window.clearTimeout(state.toastTimer);
+  const toast = $("toast");
   $("toastTitle").textContent = title;
   $("toastText").textContent = text;
-  $("toast").hidden = false;
+  toast.dataset.kind = kind;
+  toast.setAttribute("role", kind === "error" ? "alert" : "status");
+  toast.hidden = false;
   state.toastTimer = window.setTimeout(() => {
-    $("toast").hidden = true;
-  }, 4500);
-}
-
-function setDeviceError(message = "") {
-  $("deviceError").hidden = !message;
-  $("deviceErrorText").textContent = message;
+    toast.hidden = true;
+  }, kind === "error" ? 9000 : 4500);
 }
 
 function localizedError(message) {
-  if (!message) return t("requestFailed");
+  if (!message) {
+    return t("requestFailed");
+  }
   if (message.includes("K08 keyboard HID interface not found") || message.includes("K08 не найдена")) {
     return t("reconnect");
   }
@@ -529,128 +274,162 @@ function localizedError(message) {
   return message;
 }
 
+function setDeviceError(message = "") {
+  state.deviceError = message;
+  $("deviceError").hidden = !message;
+  $("deviceErrorText").textContent = message;
+}
+
 function renderDevice() {
-  const status = $("deviceStatus");
   const dot = $("statusDot");
   dot.classList.toggle("connected", state.connected);
   dot.classList.toggle("disconnected", !state.connected);
   if (!state.connected) {
-    status.textContent = t("deviceNotFound");
-    return;
+    $("deviceStatus").textContent = t("deviceNotFound");
+  } else {
+    $("deviceStatus").textContent = state.activeLayer
+      ? t("activeProfile", { profile: profileName(state.activeLayer) })
+      : t("deviceConnected");
   }
-  status.textContent = state.activeLayer
-    ? t("activeProfile", { profile: profileName(state.activeLayer) })
-    : t("deviceConnected");
+  document.body.classList.toggle("offline", !state.connected);
 }
 
-function renderLayerContext() {
-  if (!state.connected) {
-    $("layerContext").textContent = t("connectToRead");
-    return;
-  }
-  if (!state.activeLayer) {
-    $("layerContext").textContent = t("activeUnknown");
-    return;
-  }
-  if (state.activeLayer === state.viewLayer) {
-    $("layerContext").textContent = t("activeContext", { profile: profileName(state.activeLayer) });
-  } else {
-    $("layerContext").textContent = t("inactiveContext", {
+function renderContext() {
+  let text = t("connectToRead");
+  let kind = "muted";
+  if (state.connected && !state.activeLayer) {
+    text = t("activeUnknown");
+  } else if (state.connected && state.activeLayer === state.viewLayer) {
+    text = t("activeContext", { profile: profileName(state.activeLayer) });
+    kind = "ok";
+  } else if (state.connected) {
+    text = t("inactiveContext", {
       view: profileName(state.viewLayer),
       active: profileName(state.activeLayer),
     });
+    kind = "info";
   }
+  $("layerContextText").textContent = text;
+  $("layerContext").dataset.kind = kind;
 }
 
-function renderTabs() {
+function renderProfiles() {
   document.querySelectorAll("#layerTabs [data-layer]").forEach((button) => {
     const layer = Number(button.dataset.layer);
     const selected = layer === state.viewLayer;
     const drafts = layerDraftCount(layer);
-    const statuses = [];
-    if (layer === state.activeLayer) statuses.push(t("activeOnK08"));
-    if (drafts) statuses.push(t("unsavedCount", { count: drafts }));
     button.setAttribute("aria-selected", String(selected));
-    button.classList.toggle("has-draft", drafts > 0);
-    button.querySelector("small").textContent = statuses.join(" · ");
+    button.tabIndex = selected ? 0 : -1;
+    button.querySelector(".profile-meta").textContent = state.layers.length
+      ? t("assignedShort", { count: assignedCount(layer) })
+      : "—";
+    button.querySelector(".active-badge").hidden = layer !== state.activeLayer;
+    const draftBadge = button.querySelector(".draft-badge");
+    draftBadge.hidden = !drafts;
+    draftBadge.textContent = String(drafts);
+    draftBadge.title = t("unsavedCount", { count: drafts });
   });
   $("viewLayerTitle").textContent = profileName(state.viewLayer);
-  renderLayerContext();
+  $("editorLayer").textContent = profileName(state.viewLayer);
+  renderContext();
 }
 
-function makeKeycap(item) {
-  const key = item?.key || 1;
-  const text = state.drafts.has(draftId(state.viewLayer, key))
-    ? state.drafts.get(draftId(state.viewLayer, key))
-    : item?.text || "";
-  const validation = calculateEvents(text);
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "keycap";
-  button.dataset.key = String(key);
-  button.setAttribute("aria-pressed", String(key === state.selectedKey));
-  button.setAttribute(
-    "aria-label",
-    isPrivate()
-      ? t("hiddenValue", { key })
-      : t("visibleValue", { key, value: text || t("empty") }),
-  );
-  button.style.gridColumn = key <= 4 ? "1" : "2";
-  button.style.gridRow = String(key <= 4 ? key : key - 4);
-  button.classList.toggle("has-draft", state.drafts.has(draftId(state.viewLayer, key)));
-  button.classList.toggle("keycap-empty", !text);
-
-  const id = document.createElement("span");
-  id.className = "keycap-id";
-  id.textContent = `K${key}`;
-  const preview = document.createElement("span");
-  preview.className = "macro-preview";
-  preview.textContent = maskPreview(text);
-  const events = document.createElement("span");
-  events.className = "keycap-events";
-  events.textContent = validation.error ? t("needsEdit") : t("eventsCount", { count: validation.events });
-  button.append(id, preview, events);
-  button.addEventListener("click", () => selectKey(key));
-  return button;
+function buildKeypad() {
+  state.keycaps = KEYS.map((key) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "keycap";
+    button.dataset.key = String(key);
+    button.style.gridColumn = String((key - 1) % 4 + 1);
+    button.style.gridRow = key <= 4 ? "1" : "2";
+    const top = document.createElement("span");
+    top.className = "keycap-top";
+    const id = document.createElement("span");
+    id.className = "keycap-id";
+    id.textContent = `K${key}`;
+    const events = document.createElement("span");
+    events.className = "keycap-events";
+    top.append(id, events);
+    const preview = document.createElement("span");
+    preview.className = "macro-preview";
+    button.append(top, preview);
+    button.addEventListener("click", () => selectKey(key));
+    $("keypad").append(button);
+    return button;
+  });
 }
 
-function renderKeypad(animate = false) {
-  const keypad = $("keypad");
-  keypad.replaceChildren();
-  const layer = currentLayer();
-  const items = layer?.keys || Array.from({ length: 8 }, (_, index) => ({ key: index + 1 }));
-  items.forEach((item) => keypad.append(makeKeycap(item)));
-  const filled = items.filter((item) => {
-    const id = draftId(state.viewLayer, item.key);
-    return (state.drafts.has(id) ? state.drafts.get(id) : item.text || "").length > 0;
-  }).length;
-  $("layerFingerprint").textContent = t("assignedCount", { count: filled });
-  if (animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    keypad.animate(
-      [{ opacity: .35, transform: "translateY(4px)" }, { opacity: 1, transform: "translateY(0)" }],
-      { duration: 170, easing: "ease-out" },
+function renderKeypad() {
+  state.keycaps.forEach((button, index) => {
+    const key = index + 1;
+    const text = keyText(state.viewLayer, key);
+    const validation = calculateEvents(text);
+    const selected = key === state.selectedKey;
+    button.setAttribute("aria-pressed", String(selected));
+    button.tabIndex = selected ? 0 : -1;
+    button.classList.toggle("has-draft", state.drafts.has(draftId(state.viewLayer, key)));
+    button.classList.toggle("has-error", Boolean(validation.error));
+    button.classList.toggle("keycap-empty", !text);
+    button.setAttribute(
+      "aria-label",
+      isPrivate() ? t("hiddenValue", { key }) : t("visibleValue", { key, value: text || t("empty") }),
     );
-  }
+    button.querySelector(".macro-preview").replaceChildren(...previewNodes(text));
+    let events = "";
+    if (validation.error) {
+      events = t("needsEdit");
+    } else if (text) {
+      events = t("eventsShort", { count: validation.events });
+    }
+    button.querySelector(".keycap-events").textContent = events;
+  });
+  $("keypad").classList.toggle("loading", state.readStatus === "reading");
+  $("layerFingerprint").textContent = state.layers.length
+    ? t("assignedCount", { count: assignedCount(state.viewLayer) })
+    : "—";
 }
 
-function updateEditorStatus() {
+function renderReadState() {
+  const labels = {
+    reading: "reading",
+    ready: "readDone",
+    empty: "noData",
+    unavailable: "deviceUnavailable",
+  };
+  $("readState").textContent = t(labels[state.readStatus] || "noData");
+  $("readState").classList.toggle("ok", state.readStatus === "ready");
+}
+
+function renderEditorStatus() {
   const text = $("macroText").value;
   const validation = calculateEvents(text);
   const dirty = state.drafts.has(draftId());
-  $("eventMeter").textContent = t("eventMeter", { count: validation.events });
+  const ratio = Math.min(validation.events / MAX_EVENTS, 1);
+  $("eventMeter").textContent = t("eventMeter", { count: validation.events, max: MAX_EVENTS });
+  $("meterFill").style.width = `${ratio * 100}%`;
+  $("meterFill").dataset.level = validation.error ? "error" : ratio > .85 ? "warn" : "ok";
   $("macroError").hidden = !validation.error;
   $("macroError").textContent = validation.error;
+  $("macroText").setAttribute("aria-invalid", String(Boolean(validation.error)));
   $("changeBadge").hidden = !dirty;
+  $("revertKey").hidden = !dirty;
+  $("revealText").hidden = !isPrivate();
+  $("revealText").setAttribute("aria-pressed", String(state.revealed));
+  $("revealText").querySelector("span").textContent = t(state.revealed ? "hide" : "show");
+  $("macroText").classList.toggle("revealed", state.revealed);
+  if (state.busy) {
+    return;
+  }
   $("writeKey").disabled = !state.connected || !text || Boolean(validation.error) || state.pending > 0;
-  $("clearKey").disabled = !state.connected || (!storedText() && !dirty) || state.pending > 0;
-  renderTabs();
+  $("clearKey").disabled = !state.connected || !storedText() || state.pending > 0;
+  $("revertKey").disabled = false;
 }
 
-function renderEditor() {
+function loadEditor() {
   const item = currentItem();
-  $("editorLayer").textContent = profileName(state.viewLayer);
+  state.revealed = false;
   $("editorTitle").textContent = `K${state.selectedKey}`;
-  $("macroText").value = editorText();
+  $("macroText").value = keyText(state.viewLayer, state.selectedKey);
   $("writeKey").textContent = t("writeTo", { profile: profileName(state.viewLayer) });
   $("clearKey").textContent = t("clearKey", { key: state.selectedKey });
   $("macroAddress").textContent = item?.macro_address || t("newBlock");
@@ -667,26 +446,46 @@ function renderEditor() {
       address: item.macro_address || t("addressUnknown"),
     });
   }
-  updateEditorStatus();
+  renderEditorStatus();
 }
 
-function selectKey(key) {
+function render() {
+  renderDevice();
+  renderProfiles();
+  renderReadState();
+  renderKeypad();
+  renderEditorStatus();
+}
+
+function selectKey(key, focus = false) {
   state.selectedKey = key;
   renderKeypad();
-  renderEditor();
+  loadEditor();
+  if (focus) {
+    state.keycaps[key - 1].focus();
+  }
 }
 
-function selectLayer(layer) {
+function selectLayer(layer, focus = false) {
   state.layerChosen = true;
   state.viewLayer = layer;
-  renderTabs();
-  renderKeypad(true);
-  renderEditor();
+  renderProfiles();
+  renderKeypad();
+  loadEditor();
+  if (focus) {
+    document.querySelector(`#layerTabs [data-layer="${layer}"]`).focus();
+  }
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    $("keypad").animate(
+      [{ opacity: .4, transform: "translateY(3px)" }, { opacity: 1, transform: "none" }],
+      { duration: 180, easing: "ease-out" },
+    );
+  }
 }
 
-async function loadDevice() {
+async function loadDevice(quiet = false) {
   try {
-    const data = await api("/api/status");
+    const data = await api("/api/status", null, { quiet });
     state.connected = Boolean(data.connected);
     state.activeLayer = data.active_layer || null;
     if (state.activeLayer && !state.layerChosen && !state.drafts.size) {
@@ -698,13 +497,16 @@ async function loadDevice() {
     state.activeLayer = null;
     setDeviceError(localizedError(error.message));
   }
-  renderDevice();
-  renderTabs();
+  if (!state.connected) {
+    state.readStatus = "unavailable";
+  }
+  render();
 }
 
 async function loadLayers() {
   state.readStatus = "reading";
   renderReadState();
+  renderKeypad();
   try {
     const data = await api("/api/layers");
     state.layers = data.layers || [];
@@ -715,58 +517,82 @@ async function loadLayers() {
     state.readStatus = "empty";
     setDeviceError(localizedError(error.message));
   }
-  renderReadState();
-  renderTabs();
-  renderKeypad();
-  renderEditor();
+  render();
+  loadEditor();
 }
 
-function renderReadState() {
-  const labels = {
-    reading: "reading",
-    ready: "readDone",
-    empty: "noData",
-    unavailable: "deviceUnavailable",
-  };
-  $("readState").textContent = t(labels[state.readStatus] || "noData");
-  $("readState").classList.toggle("ready", state.readStatus === "ready");
+async function refreshAll() {
+  await loadDevice();
+  if (state.connected) {
+    await loadLayers();
+  }
 }
 
-function formatBackup(item) {
+async function checkDevice() {
+  if (state.checking || state.pending || document.hidden || anyDialogOpen()) {
+    return;
+  }
+  state.checking = true;
+  const wasConnected = state.connected;
+  try {
+    await loadDevice(true);
+    if (state.connected && !wasConnected) {
+      await loadLayers();
+    }
+  } finally {
+    state.checking = false;
+  }
+}
+
+function formatBackupDate(item) {
   const date = new Date(item.created_at);
-  const stamp = Number.isNaN(date.getTime())
-    ? item.created_at
-    : new Intl.DateTimeFormat(LOCALE_NAMES[state.language], { dateStyle: "medium", timeStyle: "short" }).format(date);
-  return `${stamp} · ${t("sizeKb", { size: Math.ceil(item.size / 1024) })}`;
+  if (Number.isNaN(date.getTime())) {
+    return item.created_at;
+  }
+  return new Intl.DateTimeFormat(LOCALE_NAMES[state.language], { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
 
 function renderBackups() {
-  const select = $("backupSelect");
-  select.replaceChildren();
+  const list = $("backupList");
   if (!state.backups.length) {
-    const option = document.createElement("option");
-    option.textContent = t("noBackups");
-    option.value = "";
-    select.append(option);
-    select.disabled = true;
+    const empty = document.createElement("p");
+    empty.className = "backup-empty";
+    empty.textContent = t("createFirstBackup");
+    list.replaceChildren(empty);
     $("restoreBackup").disabled = true;
-    $("backupMeta").textContent = t("createFirstBackup");
     return;
   }
-  state.backups.forEach((item) => {
-    const option = document.createElement("option");
-    option.value = item.name;
-    option.textContent = formatBackup(item);
-    select.append(option);
-  });
-  select.disabled = false;
-  $("restoreBackup").disabled = false;
-  updateBackupMeta();
-}
-
-function updateBackupMeta() {
-  const item = state.backups.find((backup) => backup.name === $("backupSelect").value);
-  $("backupMeta").textContent = item ? item.name : t("selectSavedState");
+  if (!state.backups.some((item) => item.name === state.selectedBackup)) {
+    state.selectedBackup = state.backups[0].name;
+  }
+  list.replaceChildren(...state.backups.map((item, index) => {
+    const row = document.createElement("label");
+    row.className = "backup-row";
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "backup";
+    input.value = item.name;
+    input.checked = item.name === state.selectedBackup;
+    input.addEventListener("change", () => {
+      state.selectedBackup = item.name;
+    });
+    const text = document.createElement("span");
+    text.className = "backup-text";
+    const date = document.createElement("strong");
+    date.textContent = formatBackupDate(item);
+    const name = document.createElement("small");
+    name.textContent = `${item.name} · ${t("sizeKb", { size: Math.ceil(item.size / 1024) })}`;
+    text.append(date, name);
+    row.append(input, text);
+    if (index === 0) {
+      const badge = document.createElement("span");
+      badge.className = "badge";
+      badge.textContent = t("latest");
+      row.append(badge);
+    }
+    return row;
+  }));
+  $("restoreBackup").disabled = state.busy;
 }
 
 async function loadBackups() {
@@ -775,7 +601,7 @@ async function loadBackups() {
     state.backups = data.backups || [];
   } catch (error) {
     state.backups = [];
-    showToast(t("backupReadFailed"), localizedError(error.message));
+    showToast(t("backupReadFailed"), localizedError(error.message), "error");
   }
   renderBackups();
 }
@@ -786,18 +612,21 @@ function askConfirmation({ title, text, summary, confirmLabel = t("confirm"), da
     $("confirmTitle").textContent = title;
     $("confirmText").textContent = text;
     $("confirmSummary").replaceChildren(...summary.map((line) => {
-      const item = document.createElement("span");
+      const item = document.createElement("li");
       item.textContent = line;
       return item;
     }));
     const accept = $("acceptConfirm");
     accept.textContent = confirmLabel;
-    accept.className = `button ${danger ? "danger" : "primary"}`;
+    accept.className = `button ${danger ? "danger-solid" : "primary"}`;
 
     const finish = (result) => {
       accept.onclick = null;
       $("cancelConfirm").onclick = null;
-      if (dialog.open) dialog.close();
+      dialog.oncancel = null;
+      if (dialog.open) {
+        dialog.close();
+      }
       resolve(result);
     };
     accept.onclick = () => finish(true);
@@ -810,93 +639,93 @@ function askConfirmation({ title, text, summary, confirmLabel = t("confirm"), da
   });
 }
 
-async function writeCurrentKey() {
-  const text = $("macroText").value;
-  const validation = calculateEvents(text);
-  if (!text || validation.error) {
-    updateEditorStatus();
+async function mutate({ confirm, path, payload, done, failure, reloadOnError = true }) {
+  if (confirm && !(await askConfirmation(confirm))) {
     return;
   }
-  const confirmed = await askConfirmation({
-    title: t("writeTitle", { key: state.selectedKey }),
-    text: state.viewLayer === state.activeLayer
-      ? t("writeActiveText", { profile: profileName(state.viewLayer) })
-      : t("writeInactiveText", {
-        view: profileName(state.viewLayer),
-        active: profileName(state.activeLayer),
-      }),
-    summary: [
-      `${profileName(state.viewLayer)} · K${state.selectedKey}`,
-      t("eventsCount", { count: validation.events }),
-      t("backupAutomatic"),
-    ],
-    confirmLabel: t("writeConfirm"),
-  });
-  if (!confirmed) return;
-
   setMutationBusy(true);
   try {
-    const result = await api("/api/write", {
-      layer: state.viewLayer,
-      key: state.selectedKey,
-      text,
-      commit: true,
-    });
-    state.drafts.delete(draftId());
-    await Promise.all([loadLayers(), loadDevice(), loadBackups()]);
-    const activeNote = result.layer === state.activeLayer
-      ? t("activeChange")
-      : t("activeRemains", { profile: profileName(state.activeLayer) });
-    showToast(
-      t("writeDone", { profile: profileName(result.layer) }),
-      t("writeDoneDetails", { key: result.key, activeNote, backup: result.backup }),
-    );
+    const result = await api(path, payload);
+    await done(result);
   } catch (error) {
-    showToast(t("writeFailed"), localizedError(error.message));
-    await loadLayers();
+    showToast(failure, localizedError(error.message), "error");
+    if (reloadOnError) {
+      await loadLayers();
+    }
   } finally {
     setMutationBusy(false);
-    updateEditorStatus();
   }
 }
 
-async function clearCurrentKey() {
-  const confirmed = await askConfirmation({
-    title: t("clearTitle", { key: state.selectedKey }),
-    text: t("clearText", { profile: profileName(state.viewLayer) }),
-    summary: [
-      `${profileName(state.viewLayer)} · K${state.selectedKey}`,
-      t("backupAutomatic"),
-    ],
-    confirmLabel: t("clearConfirm"),
-    danger: true,
-  });
-  if (!confirmed) return;
-
-  setMutationBusy(true);
-  try {
-    const result = await api("/api/clear", {
-      layer: state.viewLayer,
-      key: state.selectedKey,
-      commit: true,
-    });
-    state.drafts.delete(draftId());
-    await Promise.all([loadLayers(), loadBackups()]);
-    showToast(
-      t("keyCleared"),
-      t("keyClearedDetails", {
-        profile: profileName(result.layer),
-        key: result.key,
-        backup: result.backup,
-      }),
-    );
-  } catch (error) {
-    showToast(t("clearFailed"), localizedError(error.message));
-    await loadLayers();
-  } finally {
-    setMutationBusy(false);
-    updateEditorStatus();
+function writeCurrentKey() {
+  const text = $("macroText").value;
+  const validation = calculateEvents(text);
+  if (!text || validation.error || $("writeKey").disabled) {
+    return;
   }
+  const layer = state.viewLayer;
+  const key = state.selectedKey;
+  const active = state.activeLayer;
+  return mutate({
+    confirm: {
+      title: t("writeTitle", { key }),
+      text: !active || layer === active
+        ? t("writeActiveText", { profile: profileName(layer) })
+        : t("writeInactiveText", { view: profileName(layer), active: profileName(active) }),
+      summary: [
+        `${profileName(layer)} · K${key}`,
+        t("eventsCount", { count: validation.events }),
+        t("backupAutomatic"),
+      ],
+      confirmLabel: t("writeConfirm"),
+    },
+    path: "/api/write",
+    payload: { layer, key, text, commit: true },
+    failure: t("writeFailed"),
+    done: async (result) => {
+      state.drafts.delete(draftId(layer, key));
+      await Promise.all([loadLayers(), loadDevice(), loadBackups()]);
+      const activeNote = result.layer === state.activeLayer || !state.activeLayer
+        ? t("activeChange")
+        : t("activeRemains", { profile: profileName(state.activeLayer) });
+      showToast(
+        t("writeDone", { profile: profileName(result.layer) }),
+        t("writeDoneDetails", { key: result.key, activeNote, backup: result.backup }),
+      );
+    },
+  });
+}
+
+function clearCurrentKey() {
+  const layer = state.viewLayer;
+  const key = state.selectedKey;
+  return mutate({
+    confirm: {
+      title: t("clearTitle", { key }),
+      text: t("clearText", { profile: profileName(layer) }),
+      summary: [`${profileName(layer)} · K${key}`, t("backupAutomatic")],
+      confirmLabel: t("clearConfirm"),
+      danger: true,
+    },
+    path: "/api/clear",
+    payload: { layer, key, commit: true },
+    failure: t("clearFailed"),
+    done: async (result) => {
+      state.drafts.delete(draftId(layer, key));
+      await Promise.all([loadLayers(), loadBackups()]);
+      showToast(
+        t("keyCleared"),
+        t("keyClearedDetails", { profile: profileName(result.layer), key: result.key, backup: result.backup }),
+      );
+    },
+  });
+}
+
+function revertCurrentKey() {
+  state.drafts.delete(draftId());
+  loadEditor();
+  renderKeypad();
+  renderProfiles();
 }
 
 function openCopyDialog() {
@@ -905,141 +734,225 @@ function openCopyDialog() {
   Array.from($("copySource").options).forEach((option) => {
     option.disabled = Number(option.value) === target;
   });
-  $("copySource").value = String([1, 2, 3, 4].find((layer) => layer !== target));
+  $("copySource").value = String(LAYERS.find((layer) => layer !== target));
   $("copyDialog").showModal();
 }
 
-async function copyLayer() {
+function copyLayer() {
   const source = Number($("copySource").value);
   const target = state.viewLayer;
-  setMutationBusy(true);
-  try {
-    const result = await api("/api/copy-layer", { source, target });
-    for (const key of Array.from(state.drafts.keys())) {
-      if (key.startsWith(`${target}:`)) state.drafts.delete(key);
-    }
-    $("copyDialog").close();
-    await Promise.all([loadLayers(), loadBackups()]);
-    showToast(
-      t("profileCopied"),
-      t("profileCopiedDetails", {
-        source: profileName(result.source),
-        target: profileName(result.target),
-        backup: result.backup,
-      }),
-    );
-  } catch (error) {
-    showToast(t("copyFailed"), localizedError(error.message));
-  } finally {
-    setMutationBusy(false);
-  }
-}
-
-async function createBackup() {
-  setMutationBusy(true);
-  try {
-    const result = await api("/api/backup", {});
-    await loadBackups();
-    $("backupSelect").value = result.backup;
-    updateBackupMeta();
-    showToast(t("backupCreated"), result.backup);
-  } catch (error) {
-    showToast(t("backupFailed"), localizedError(error.message));
-  } finally {
-    setMutationBusy(false);
-  }
-}
-
-async function restoreBackup() {
-  const backup = $("backupSelect").value;
-  if (!backup) return;
-  $("backupDialog").close();
-  const confirmed = await askConfirmation({
-    title: t("restoreTitle"),
-    text: t("restoreText"),
-    summary: [backup, t("draftsDeleted")],
-    confirmLabel: t("restoreConfirm"),
-    danger: true,
+  $("copyDialog").close();
+  return mutate({
+    path: "/api/copy-layer",
+    payload: { source, target },
+    failure: t("copyFailed"),
+    done: async (result) => {
+      for (const id of Array.from(state.drafts.keys())) {
+        if (id.startsWith(`${target}:`)) {
+          state.drafts.delete(id);
+        }
+      }
+      await Promise.all([loadLayers(), loadBackups()]);
+      showToast(
+        t("profileCopied"),
+        t("profileCopiedDetails", {
+          source: profileName(result.source),
+          target: profileName(result.target),
+          backup: result.backup,
+        }),
+      );
+    },
   });
-  if (!confirmed) return;
-
-  setMutationBusy(true);
-  try {
-    await api("/api/restore", { backup });
-    state.drafts.clear();
-    await Promise.all([loadLayers(), loadDevice()]);
-    showToast(t("restoreDone"), backup);
-  } catch (error) {
-    showToast(t("restoreFailed"), localizedError(error.message));
-    await loadLayers();
-  } finally {
-    setMutationBusy(false);
-  }
 }
 
-async function refreshAll() {
-  await loadDevice();
-  if (state.connected) await loadLayers();
+function createBackup() {
+  return mutate({
+    path: "/api/backup",
+    payload: {},
+    failure: t("backupFailed"),
+    reloadOnError: false,
+    done: async (result) => {
+      state.selectedBackup = result.backup;
+      await loadBackups();
+      showToast(t("backupCreated"), result.backup);
+    },
+  });
+}
+
+function restoreBackup() {
+  const backup = state.selectedBackup;
+  if (!backup) {
+    return;
+  }
+  $("backupDialog").close();
+  return mutate({
+    confirm: {
+      title: t("restoreTitle"),
+      text: t("restoreText"),
+      summary: [backup, t("draftsDeleted")],
+      confirmLabel: t("restoreConfirm"),
+      danger: true,
+    },
+    path: "/api/restore",
+    payload: { backup },
+    failure: t("restoreFailed"),
+    done: async () => {
+      state.drafts.clear();
+      await Promise.all([loadLayers(), loadDevice()]);
+      showToast(t("restoreDone"), backup);
+    },
+  });
+}
+
+function insertToken(token) {
+  const textarea = $("macroText");
+  textarea.setRangeText(`{${token}}`, textarea.selectionStart, textarea.selectionEnd, "end");
+  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+  textarea.focus();
+}
+
+function buildTokens(container, tokens) {
+  container.replaceChildren(...tokens.map((token) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = TOKEN_LABELS[token];
+    button.title = `{${token}}`;
+    button.addEventListener("click", () => insertToken(token));
+    return button;
+  }));
 }
 
 function changeLanguage(language) {
-  if (!(language in I18N)) return;
+  if (!(language in I18N)) {
+    return;
+  }
   state.language = language;
   localStorage.setItem("k08-language", language);
   applyStaticTranslations();
-  renderDevice();
-  renderTabs();
-  renderKeypad();
-  renderEditor();
-  renderReadState();
+  setDeviceError(state.connected ? state.deviceError : t("reconnect"));
+  render();
+  loadEditor();
   renderBackups();
-  if (!state.connected) setDeviceError(t("reconnect"));
+}
+
+function moveKey(event) {
+  const key = state.selectedKey;
+  const column = (key - 1) % 4;
+  const row = key <= 4 ? 0 : 1;
+  const moves = {
+    ArrowUp: [column, row - 1],
+    ArrowDown: [column, row + 1],
+    ArrowLeft: [column - 1, row],
+    ArrowRight: [column + 1, row],
+  };
+  const target = moves[event.key];
+  if (!target) {
+    return;
+  }
+  event.preventDefault();
+  const [nextColumn, nextRow] = target;
+  if (nextColumn < 0 || nextColumn > 3 || nextRow < 0 || nextRow > 1) {
+    return;
+  }
+  selectKey(nextRow * 4 + nextColumn + 1, true);
+}
+
+function moveLayer(event) {
+  const index = LAYERS.indexOf(state.viewLayer);
+  const moves = {
+    ArrowUp: index - 1,
+    ArrowLeft: index - 1,
+    ArrowDown: index + 1,
+    ArrowRight: index + 1,
+    Home: 0,
+    End: LAYERS.length - 1,
+  };
+  if (moves[event.key] === undefined) {
+    return;
+  }
+  event.preventDefault();
+  const next = LAYERS[(moves[event.key] + LAYERS.length) % LAYERS.length];
+  selectLayer(next, true);
+}
+
+function handleShortcut(event) {
+  if (anyDialogOpen()) {
+    return;
+  }
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "s") {
+    event.preventDefault();
+    writeCurrentKey();
+    return;
+  }
+  const typing = event.target.closest("textarea, input, select");
+  if (typing || event.metaKey || event.ctrlKey || event.altKey) {
+    return;
+  }
+  const key = Number(event.key);
+  if (KEYS.includes(key)) {
+    event.preventDefault();
+    selectKey(key, true);
+  }
 }
 
 function bindEvents() {
   document.querySelectorAll("#layerTabs [data-layer]").forEach((button) => {
     button.addEventListener("click", () => selectLayer(Number(button.dataset.layer)));
   });
+  $("layerTabs").addEventListener("keydown", moveLayer);
+  $("keypad").addEventListener("keydown", moveKey);
+  document.addEventListener("keydown", handleShortcut);
   $("macroText").addEventListener("input", () => {
     const value = $("macroText").value;
-    const id = draftId();
-    if (value === storedText()) state.drafts.delete(id);
-    else state.drafts.set(id, value);
+    if (value === storedText()) {
+      state.drafts.delete(draftId());
+    } else {
+      state.drafts.set(draftId(), value);
+    }
     renderKeypad();
-    updateEditorStatus();
+    renderProfiles();
+    renderEditorStatus();
   });
-  document.querySelectorAll("#tokenRow [data-token]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const textarea = $("macroText");
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      textarea.setRangeText(button.dataset.token, start, end, "end");
-      textarea.dispatchEvent(new Event("input", { bubbles: true }));
-      textarea.focus();
-    });
+  $("revealText").addEventListener("click", () => {
+    state.revealed = !state.revealed;
+    renderEditorStatus();
   });
   $("privacyToggle").addEventListener("change", () => {
     document.body.classList.toggle("privacy-on", isPrivate());
     localStorage.setItem("k08-private", isPrivate() ? "1" : "0");
+    state.revealed = false;
     renderKeypad();
+    renderEditorStatus();
   });
   $("languageSelect").addEventListener("change", (event) => changeLanguage(event.target.value));
   $("refreshDevice").addEventListener("click", refreshAll);
   $("retryDevice").addEventListener("click", refreshAll);
   $("writeKey").addEventListener("click", writeCurrentKey);
   $("clearKey").addEventListener("click", clearCurrentKey);
+  $("revertKey").addEventListener("click", revertCurrentKey);
   $("copyLayer").addEventListener("click", openCopyDialog);
   $("confirmCopy").addEventListener("click", copyLayer);
   $("openBackups").addEventListener("click", async () => {
-    await loadBackups();
     $("backupDialog").showModal();
+    await loadBackups();
   });
   $("closeBackups").addEventListener("click", () => $("backupDialog").close());
   $("createBackup").addEventListener("click", createBackup);
   $("restoreBackup").addEventListener("click", restoreBackup);
-  $("backupSelect").addEventListener("change", updateBackupMeta);
+  $("toastClose").addEventListener("click", () => {
+    $("toast").hidden = true;
+  });
+  document.addEventListener("visibilitychange", checkDevice);
+  window.addEventListener("focus", checkDevice);
+  window.setInterval(() => {
+    if (!state.connected) {
+      checkDevice();
+    }
+  }, 4000);
   window.addEventListener("beforeunload", (event) => {
-    if (!state.drafts.size) return;
+    if (!state.drafts.size) {
+      return;
+    }
     event.preventDefault();
     event.returnValue = "";
   });
@@ -1049,17 +962,13 @@ async function init() {
   applyStaticTranslations();
   $("privacyToggle").checked = localStorage.getItem("k08-private") !== "0";
   document.body.classList.toggle("privacy-on", isPrivate());
+  buildKeypad();
+  buildTokens($("tokenKeys"), KEY_TOKENS);
+  buildTokens($("tokenShortcuts"), SHORTCUT_TOKENS);
   bindEvents();
-  renderTabs();
-  renderKeypad();
-  renderEditor();
-  await loadDevice();
-  if (state.connected) await loadLayers();
-  else {
-    state.readStatus = "unavailable";
-    renderReadState();
-    renderEditor();
-  }
+  render();
+  loadEditor();
+  await refreshAll();
 }
 
 init();
